@@ -3,7 +3,7 @@
 	multiply them and return the product.
 */
 
-:- working_directory(_, 'C:/Users/Steve/github/aoc2020/day1/').
+% :- working_directory(_, 'C:/Users/Steve/github/aoc2020/day1/').
 
 read_input_line(Stream, X) :- 
 	read_line_to_string(Stream, String),
