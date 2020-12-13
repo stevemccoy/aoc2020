@@ -31,7 +31,8 @@ skip_lines(Stream, N) :-
 	!,
 	M is N - 1,
 	skip_lines(Stream, M).
-skip_lines(_, 0).
+skip_lines(_, N) :-
+	N >= 0.
 
 % Input: Pos1, Count1.
 % Read line.
