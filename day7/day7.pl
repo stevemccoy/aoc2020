@@ -101,14 +101,44 @@ rule(Head, Tail) -->
 
 contains_shiny_gold_bag(C) :-
 	bag_has(C, D),
-	contains_shiny_gold_bag(D).
+	D =.. [Functor | _],
+	contains_shiny_gold_bag(Functor).
 contains_shiny_gold_bag(C) :- 
 	bag_has(C, shiny_gold(_)).
+
+% expand_bags(InList, OutList).
+
+expand_bags([], []).
+expand_bags([Bag | RestIn], [Bag | OutList]) :-
+	Bag =.. [Functor, Quantity],
+	findall(Something, (
+		bag_has(Functor, Child1),
+		Child1 =.. [ChildName, N],
+		Q is N * Quantity,
+		Something =.. [ChildName, Q]
+	), ChildList),
+	append(RestIn, ChildList, Agenda),
+	expand_bags(Agenda, OutList).
+
+bag_count([], 0).
+bag_count([Bag | Tail], Count) :-
+	Bag =.. [_, N],
+	bag_count(Tail, M),
+	Count is M + N.
 
 day7part1(List) :-
 	retractall(bag_has(_,_)),
 	read_input_data("input7.txt", List),
-	findall(X, contains_shiny_gold_bag(X), BagList),
+	setof(X, contains_shiny_gold_bag(X), BagList),
+	writeln(BagList),
 	length(BagList, Count),
 	format('Day 7, Part 1: ~d bags eventually contain a shiny gold bag.', [Count]).
 
+day7part2(OtherCount) :-
+	retractall(bag_has(_,_)),
+	read_input_data("input7.txt", _),
+	expand_bags([shiny_gold(1)], BagList),
+	writeln(BagList),
+	bag_count(BagList, Count),
+	OtherCount is Count - 1,
+	format('Day 7, Part 2: 1 shiny gold bag contains ~d other bags.', [OtherCount]).
